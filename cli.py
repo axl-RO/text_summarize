@@ -1,27 +1,47 @@
 import argparse
-from summarizer import summarize_text
+from summarizer.model import summarize_batch
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Text Summarization using T5")
+    parser = argparse.ArgumentParser(description="FLAN-T5 Text Summarizer")
+
     parser.add_argument("--text", type=str, help="Text to summarize")
-    parser.add_argument("--file", type=str, help="Text file to summarize")
+    parser.add_argument("--file", type=str, help="File containing text")
+    parser.add_argument("--style", choices=["short", "medium"], default="medium")
+    parser.add_argument("--temperature", type=float, default=0.7)
+    parser.add_argument("--beams", type=int, default=4)
+    parser.add_argument("--batch", type=int, default=1)
 
     args = parser.parse_args()
 
+    texts = []
+
     if args.text:
-        text = args.text
+        texts.append(args.text)
 
     elif args.file:
         with open(args.file, "r", encoding="utf-8") as f:
-            text = f.read()
+            raw = f.read()
+
+        if args.batch > 1:
+            chunks = raw.split("\n\n")
+            texts = chunks[:args.batch]
+        else:
+            texts = [raw]
 
     else:
         print("Provide --text or --file")
         return
 
-    summary = summarize_text(text)
-    print("\nSummary:\n", summary)
+    summaries = summarize_batch(
+        texts,
+        style=args.style,
+        temperature=args.temperature,
+        num_beams=args.beams
+    )
+
+    for i, s in enumerate(summaries, 1):
+        print(f"\nSummary {i}:\n{s}\n")
 
 
 if __name__ == "__main__":
