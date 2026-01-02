@@ -1,0 +1,2 @@
+[console_scripts]
+t5summarize = summarizer.cli:main
