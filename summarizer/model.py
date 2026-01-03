@@ -7,10 +7,20 @@ tokenizer = T5Tokenizer.from_pretrained(MODEL_NAME)
 model = T5ForConditionalGeneration.from_pretrained(MODEL_NAME)
 
 
-STYLE_PROMPTS = {
-    "short": "summarize briefly: ",
-    "medium": "summarize the following text: "
+STYLE_CONFIG = {
+    "short": {
+        "prompt": "Summarize this in 1–2 sentences: ",
+        "max_length": 50,
+        "min_length": 20,
+    },
+    "medium": {
+        "prompt": "Summarize the following text: ",
+        "max_length": 120,
+        "min_length": 60,
+    }
 }
+
+
 
 
 def summarize_batch(
@@ -20,11 +30,14 @@ def summarize_batch(
     temperature=0.7,
     num_beams=4
 ):
-    if style not in STYLE_PROMPTS:
+    if style not in STYLE_CONFIG:
         raise ValueError("style must be 'short' or 'medium'")
+    
+    config = STYLE_CONFIG[style]
 
-    prompts = [STYLE_PROMPTS[style] + t for t in texts]
+    prompts = [config["prompt"] + t for t in texts]
 
+    
     inputs = tokenizer(
         prompts,
         return_tensors="pt",
@@ -32,6 +45,18 @@ def summarize_batch(
         truncation=True,
         max_length=512
     )
+
+    outputs = model.generate(
+        input_ids=inputs["input_ids"],
+        attention_mask=inputs["attention_mask"],
+        max_length=config["max_length"],
+        min_length=config["min_length"],
+        num_beams=num_beams,
+        temperature=temperature,
+        length_penalty=1.2,
+        early_stopping=True,
+    )
+
 
     with torch.no_grad():
         outputs = model.generate(

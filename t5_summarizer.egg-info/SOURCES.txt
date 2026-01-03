@@ -1,5 +1,8 @@
 README.md
 setup.py
+summarizer/__init__.py
+summarizer/cli.py
+summarizer/model.py
 t5_summarizer.egg-info/PKG-INFO
 t5_summarizer.egg-info/SOURCES.txt
 t5_summarizer.egg-info/dependency_links.txt
