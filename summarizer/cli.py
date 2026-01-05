@@ -1,49 +1,48 @@
 import argparse
-from summarizer.model import summarize_batch
+from summarizer.model import summarize_batch, summarize_long_text
 
 
 def main():
     parser = argparse.ArgumentParser(description="FLAN-T5 Text Summarizer")
 
     parser.add_argument("--text", type=str, help="Text to summarize")
-    parser.add_argument("--file", type=str, help="File containing text")
+    parser.add_argument("--file", type=str, help="Text file to summarize")
     parser.add_argument("--style", choices=["short", "medium"], default="medium")
     parser.add_argument("--temperature", type=float, default=0.7)
     parser.add_argument("--beams", type=int, default=4)
-    parser.add_argument("--batch", type=int, default=1)
 
     args = parser.parse_args()
 
-    texts = []
-
+    # -------- Text input (single-pass) --------
     if args.text:
-        texts.append(args.text)
+        summaries = summarize_batch(
+            [args.text],
+            style=args.style,
+            temperature=args.temperature,
+            num_beams=args.beams
+        )
 
-    elif args.file:
+        print("\nSummary:\n", summaries[0])
+        return
+
+    # -------- File input (long-text pipeline) --------
+    if args.file:
         with open(args.file, "r", encoding="utf-8") as f:
             raw_text = f.read()
 
-        if args.batch > 1:
-            chunks = raw_text.split("\n\n")
-            texts.extend(chunks[:args.batch])
-        else:
-            texts.append(raw_text)
+        summary = summarize_long_text(
+            raw_text,
+            style=args.style,
+            temperature=args.temperature,
+            num_beams=args.beams
+        )
 
-    else:
-        print("Provide --text or --file")
+        print("\nSummary:\n", summary)
         return
 
-
-    summaries = summarize_batch(
-        texts,
-        style=args.style,
-        temperature=args.temperature,
-        num_beams=args.beams
-    )
-
-    for i, s in enumerate(summaries, 1):
-        print(f"\nSummary {i}:\n{s}\n")
+    print("Provide either --text or --file")
 
 
 if __name__ == "__main__":
     main()
+    
