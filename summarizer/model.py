@@ -14,7 +14,7 @@ model = T5ForConditionalGeneration.from_pretrained(MODEL_NAME)
 # -----------------------------
 STYLE_CONFIG = {
     "short": {
-        "prompt": "Summarize this in 1–2 concise sentences: ",
+        "prompt": "Summarize this in 1-2 concise sentences: ",
         "max_length": 50,
         "min_length": 20,
         "length_penalty": 1.8
