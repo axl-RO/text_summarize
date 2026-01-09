@@ -1,9 +1,9 @@
-# 🧠 FLAN-T5 Text Summarizer (CLI)
+# FLAN-T5 Text Summarizer (CLI)
 
 A lightweight **command-line text summarization tool** built using **FLAN-T5**.
 It supports short and medium summaries and can handle **large `.txt` files** through automatic chunking.
 
-## ✨ Features
+## Features
 
 - FLAN-T5 (`google/flan-t5-small`)
 - CLI-based usage
@@ -12,14 +12,14 @@ It supports short and medium summaries and can handle **large `.txt` files** thr
 - Handles long text via hierarchical chunking
 - Installable as a global CLI command
 
-## 🚀 Installation
+## Installation
 
 ```bash
 pip install -r requirements.txt
 pip install -e .
 ```
 
-## 🖥️ Usage
+## Usage
 
 ### Summarize text
 
@@ -39,7 +39,7 @@ t5summarize --file sample.txt
 t5summarize --file sample.txt --style short
 ```
 
-## 🧠 Model
+## Model
 
 - **Model**: FLAN-T5 (encoder–decoder transformer)
 - **Long text handling**: Chunking + summary-of-summaries
